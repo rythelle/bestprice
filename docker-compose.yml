@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres
+    container_name: db_redvelvet
+    restart: always
+    ports:
+      - 5434:5432
+    environment:
+     POSTGRES_DB: app
+     POSTGRES_USER: postgres
+     POSTGRES_PASSWORD: docker
+    volumes:
+      - pgdata:/data/postgres
+
+volumes:
+  pgdata:
+    driver: local
