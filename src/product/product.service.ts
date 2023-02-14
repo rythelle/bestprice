@@ -2,6 +2,13 @@ import { Body, Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
+function NormalizeString(data: string) {
+  return data
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toUpperCase();
+}
+
 @Injectable()
 export class ProductService {
   constructor(private prisma: PrismaService) {}
@@ -10,23 +17,21 @@ export class ProductService {
     @Body()
     {
       name,
+      brand,
+      type,
+      value_type,
+      unit,
       category,
       purchase_date,
+      price,
       place_purchase,
-      regular_price,
-      promotional_price,
       tags,
     }: CreateProductDto,
   ) {
-    const nameNormalized = name
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toUpperCase();
-
-    const categoryNormalized = category
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toUpperCase();
+    const nameNormalized = NormalizeString(name);
+    const brandNormalized = NormalizeString(brand);
+    const categoryNormalized = NormalizeString(category);
+    const categoryNormalized = NormalizeString(category);
 
     return this.prisma.product.create({
       data: {
@@ -34,8 +39,7 @@ export class ProductService {
         category: categoryNormalized,
         purchase_date: new Date(purchase_date),
         place_purchase,
-        regular_price,
-        promotional_price,
+        price,
         tags,
       },
     });
@@ -54,8 +58,7 @@ export class ProductService {
     if (!products) throw new Error('Product do not exists.');
 
     return products.reduce((acc, curr) => {
-      if (parseFloat(acc.regular_price) < parseFloat(curr.regular_price))
-        return acc;
+      if (parseFloat(acc.price) < parseFloat(curr.price)) return acc;
 
       return curr;
     });

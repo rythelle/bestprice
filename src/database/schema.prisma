@@ -7,17 +7,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Type {
+  LT
+  ML
+  KG
+  MG
+}
+
 model Product {
-  id                String   @id() @default(uuid())
-  created_at        DateTime @default(now()) @db.Timestamptz(3)
-  updated_at        DateTime @default(now()) @updatedAt() @db.Timestamptz(3)
-  name              String
-  category          String
-  purchase_date     DateTime @db.Timestamptz(3)
-  regular_price     String
-  promotional_price String?
-  place_purchase    String
-  tags              Json     @default("{}") @db.JsonB
+  id             String   @id() @default(uuid())
+  created_at     DateTime @default(now()) @db.Timestamptz(3)
+  updated_at     DateTime @default(now()) @updatedAt() @db.Timestamptz(3)
+  name           String
+  brand          String
+  type           Type?
+  value_type     Float?
+  unit           Boolean  @default(true)
+  category       String
+  purchase_date  DateTime @db.Timestamptz(3)
+  price          String
+  place_purchase String
+  tags           Json     @default("{}") @db.JsonB
 
   @@map("product")
 }
@@ -26,7 +36,7 @@ model Product {
 //   name              Product  @relation(fields: [productId], references: [id])
 //   updated_at        DateTime @default(now()) @updatedAt() @db.Timestamptz(3)
 //   category          String
-//   regular_price     String
+//   price     String
 //   promotional_price String?
 //   place_purchase    String
 //   tags              Json     @default("{}") @db.JsonB
